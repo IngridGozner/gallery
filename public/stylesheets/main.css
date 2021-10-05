@@ -1,0 +1,4 @@
+div.v-application--wrap {
+  background-image: url('/background.jpg');
+  background-size: cover;
+}

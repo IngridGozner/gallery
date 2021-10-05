@@ -1,0 +1,35 @@
+{
+  "name": "meme-generator",
+  "version": "0.3.0",
+  "description": "Meme Generator",
+  "engines": {
+    "node": "14.x"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node server.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "gifencoder": "^2.0.1",
+    "vue": "^2.6.12",
+    "vue-resource": "^1.5.2",
+    "vuetify": "^2.4.11"
+  },
+  "devDependencies": {
+    "got": "^11.3.0",
+    "tape": "^4.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IngridGozner/gallery.git"
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "license": "MIT"
+}
