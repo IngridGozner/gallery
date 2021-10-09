@@ -6,8 +6,23 @@
       vuetify: new Vuetify(),
       created () {
         this.$vuetify.theme.dark = true
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkjmnV3QVHh6DzkK9LsOMaduWJM8rQmgU",
+            authDomain: "gallery-6d339.firebaseapp.com",
+            databaseURL: "https://gallery-6d339-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "gallery-6d339",
+            storageBucket: "gallery-6d339.appspot.com",
+            messagingSenderId: "630612756189",
+            appId: "1:630612756189:web:32da32ed6bf9ee92ab3d34"
+          };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
       },
       data: {
+        galleryList: {},
       }
     })
 </script>

@@ -1,19 +1,133 @@
 Vue.component('theme', {
+  props: ['galleryList'],
+
   data: function () {
       return {
         title: 'Gallery',
+        dialog: false,
+
+        imageUrl: '',
+        imageData: null,
+
+        search: "",
+        select: []
       }
     },
+
+    methods:{
+      upload(){
+      },
+
+      //add image to database
+      addImageToDB(){
+
+        const data = {
+          photo: this.imageUrl,
+          tagList: this.select
+        }
+
+        firebase.database().ref('gallery').push(data)
+        .then((response) => {
+          console.log(response)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      },
+
+      click1() {
+        this.$refs.input1.click()
+      },
+
+      previewImage(event) {
+        this.uploadValue=0;
+        this.imageUrl=null;
+        this.imageData = event.target.files[0];
+        this.onUpload()
+      },
+
+      //add image to storage
+      onUpload(){
+        this.imageUrl=null;
+        const storageRef=firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
+        storageRef.on(`state_changed`,snapshot=>{
+        this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+          }, error=>{console.log(error.message)},
+        ()=>{this.uploadValue=100;
+            storageRef.snapshot.ref.getDownloadURL().then((url)=>{
+                this.imageUrl =url;
+                console.log(this.imageUrl)
+              });
+            }
+          );
+       },
+    },
   template:
-  `  <v-app id="inspire">
+  ` <v-app id="inspire">
 
     <v-app-bar app
     color="#3F4045"
     >
 
-    <v-toolbar-title>
-      <span style="color:#fbfbfb; font-family: 'Uncial Antiqua'; font-size: 30px">{{ title }}</span>
-    </v-toolbar-title>
+      <v-toolbar-title class="mr-12 align-center">
+        <span style="color:#fbfbfb; font-family: 'Uncial Antiqua'; font-size: 30px">{{ title }}</span>
+      </v-toolbar-title>
+
+      <v-row justify="end">
+          <v-btn
+            color="accent"
+            outlined
+            @click="dialog=true"
+          >Upload</v-btn>
+      </v-row>
+
+      <v-dialog
+        v-model="dialog"
+        width="900"
+      >
+        <v-card elevation="2">
+          <v-card-title>Upload Photo</v-card-title>
+          <v-card-text>
+          <v-layout row>
+              <v-flex  md6 offset-sm3 >
+               <div>
+                 <div >
+                   <v-btn @click="click1">choose a photo</v-btn>
+                   <input type="file" ref="input1"
+                    style="display: none"
+                    @change="previewImage" accept="image/*" >
+                 </div>
+
+               <div v-if="imageData!=null">
+                  <img class="preview" height="268" width="356" :src="imageUrl">
+               <br>
+               </div>
+
+               </div>
+               </v-flex>
+            </v-layout>
+            <v-layout row>
+            <v-flex xs12>
+              <v-combobox multiple
+                    v-model="select"
+                    label="Tags"
+                    append-icon
+                    chips
+                    deletable-chips
+                    class="tag-input"
+                    :search-input.sync="search"
+                    >
+              </v-combobox>
+            </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex class="text-center">
+                <v-btn color="pink" @click="addImageToDB">upload</v-btn>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
     </v-app-bar>
 
