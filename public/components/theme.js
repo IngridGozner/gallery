@@ -33,6 +33,12 @@ Vue.component('theme', {
         .catch(err => {
           console.log(err)
         })
+
+        this.dialog = false;
+        this.select = [];
+        this.search = "";
+        this.imageUrl = "";
+        this.imageData = null;
       },
 
       click1() {
