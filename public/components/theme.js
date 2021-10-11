@@ -8,14 +8,31 @@ Vue.component('theme', {
         imageData: null,
 
         search: "",
-        select: []
+        select: [],
+
+        gallerylist: []
       }
+    },
+
+    created:
+      function(){
+        const list = [];
+
+        firebase.database().ref('gallery').once('value', function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                  let childData = childSnapshot.val();
+                  list.push(childData);
+                });
+
+            }).then(()=>{
+              this.gallerylist = list;
+            });
+
     },
 
     methods:{
       //add image to database
       addImageToDB(){
-
         const data = {
           photo: this.imageUrl,
           tagList: this.select
@@ -23,7 +40,7 @@ Vue.component('theme', {
 
         firebase.database().ref('gallery').push(data)
         .then((response) => {
-          console.log(response)
+          // console.log(response)
         })
         .catch(err => {
           console.log(err)
@@ -34,6 +51,14 @@ Vue.component('theme', {
         this.search = "";
         this.imageUrl = "";
         this.imageData = null;
+
+        let val = null;
+
+        firebase.database().ref('gallery').limitToLast(1).on('child_added', function(data) {
+             val = data.val();
+           });
+           this.gallerylist.push(val);
+           console.log("data added: " + JSON.stringify(val));
       },
 
       click1() {
@@ -57,7 +82,6 @@ Vue.component('theme', {
         ()=>{this.uploadValue=100;
             storageRef.snapshot.ref.getDownloadURL().then((url)=>{
                 this.imageUrl =url;
-                console.log(this.imageUrl)
               });
             }
           );
@@ -100,7 +124,7 @@ Vue.component('theme', {
                  </div>
 
                <div v-if="imageData!=null">
-                  <img class="preview" height="268" width="356" :src="imageUrl">
+                  <img class="preview" height="268" width="356" contain :src="imageUrl">
                <br>
                </div>
 
@@ -133,7 +157,33 @@ Vue.component('theme', {
     </v-app-bar>
 
   <v-main>
-      <slot></slot>
+    <v-container fluid>
+      <v-row>
+        <v-col
+          v-for="n in gallerylist"
+          :key="n.photo"
+          class="d-flex child-flex"
+          cols="4"
+        >
+                  <v-card>
+                    <v-img
+                      :src="\`\${n.photo}\`"
+                      :lazy-src="\`\${n.photo}\`"
+                      height="300"
+                      contain
+                      class="grey darken-4"
+                    ></v-img>
+                    <v-card-title class="text-h6">
+                    <v-icon left>
+                      mdi-label
+                    </v-icon>
+                      <v-chip v-for="tag in n.tagList">
+                      {{ tag }}</v-chip>
+                    </v-card-title>
+                  </v-card>
+                </v-col>
+        </v-row>
+    </v-container>
   </v-main>
   </v-app>
   `
