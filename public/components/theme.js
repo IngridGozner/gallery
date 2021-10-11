@@ -1,6 +1,4 @@
 Vue.component('theme', {
-  props: ['galleryList'],
-
   data: function () {
       return {
         title: 'Gallery',
@@ -15,9 +13,6 @@ Vue.component('theme', {
     },
 
     methods:{
-      upload(){
-      },
-
       //add image to database
       addImageToDB(){
 
