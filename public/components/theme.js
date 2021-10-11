@@ -40,7 +40,7 @@ Vue.component('theme', {
 
         firebase.database().ref('gallery').push(data)
         .then((response) => {
-          // console.log(response)
+          console.log(response)
         })
         .catch(err => {
           console.log(err)
@@ -58,10 +58,9 @@ Vue.component('theme', {
              val = data.val();
            });
            this.gallerylist.push(val);
-           console.log("data added: " + JSON.stringify(val));
       },
 
-      click1() {
+      choosePhoto() {
         this.$refs.input1.click()
       },
 
@@ -111,20 +110,21 @@ Vue.component('theme', {
         width="900"
       >
         <v-card elevation="2">
-          <v-card-title>Upload Photo</v-card-title>
+          <v-card-title style="color:#fbfbfb; font-family: 'Uncial Antiqua'; font-size: 20px">Upload Photo</v-card-title>
           <v-card-text>
-          <v-layout row>
-              <v-flex  md6 offset-sm3 >
+          <v-layout row justify="center">
+              <v-flex  class="text-center">
                <div>
-                 <div >
-                   <v-btn @click="click1">choose a photo</v-btn>
+                 <div>
+                 <br>
+                   <v-btn color="secondary" @click="choosePhoto">choose a photo</v-btn>
                    <input type="file" ref="input1"
                     style="display: none"
                     @change="previewImage" accept="image/*" >
                  </div>
 
                <div v-if="imageData!=null">
-                  <img class="preview" height="268" width="356" contain :src="imageUrl">
+                  <v-img height="300" contain :src="imageUrl"/>
                <br>
                </div>
 
