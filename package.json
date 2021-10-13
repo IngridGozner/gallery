@@ -1,7 +1,7 @@
 {
-  "name": "meme-generator",
+  "name": "gallery",
   "version": "0.3.0",
-  "description": "Meme Generator",
+  "description": "gallery",
   "engines": {
     "node": "14.x"
   },

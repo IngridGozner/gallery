@@ -10,7 +10,10 @@ Vue.component('theme', {
         search: "",
         select: [],
 
-        gallerylist: []
+        gallerylist: [],
+
+        okTag: false,
+        okImage: false,
       }
     },
 
@@ -31,33 +34,46 @@ Vue.component('theme', {
     },
 
     methods:{
+      //check if there was at least one tag added
+      required(value) {
+          if (value instanceof Array && value.length == 0) {
+            this.okTag = false;
+            return 'Add at least one tag.';
+          }
+          else{
+            this.okTag = true;
+          }
+          return !!value || 'Add at least one tag.';
+        },
+
       //add image to database
       addImageToDB(){
-        const data = {
-          photo: this.imageUrl,
-          tagList: this.select
-        }
+          const data = {
+            photo: this.imageUrl,
+            tagList: this.select
+          }
 
-        firebase.database().ref('gallery').push(data)
-        .then((response) => {
-          console.log(response)
-        })
-        .catch(err => {
-          console.log(err)
-        })
+          firebase.database().ref('gallery').push(data)
+          .then((response) => {
+            console.log(response)
+          })
+          .catch(err => {
+            console.log(err)
+          })
 
-        this.dialog = false;
-        this.select = [];
-        this.search = "";
-        this.imageUrl = "";
-        this.imageData = null;
+          this.dialog = false;
+          this.select = [];
+          this.search = "";
+          this.imageUrl = "";
+          this.imageData = null;
 
-        let val = null;
+          let val = null;
 
-        firebase.database().ref('gallery').limitToLast(1).on('child_added', function(data) {
-             val = data.val();
-           });
-           this.gallerylist.push(val);
+          firebase.database().ref('gallery').limitToLast(1).on('child_added', function(data) {
+               val = data.val();
+             });
+          this.gallerylist.push(val);
+          
       },
 
       choosePhoto() {
@@ -65,6 +81,7 @@ Vue.component('theme', {
       },
 
       previewImage(event) {
+        this.okImage = true;
         this.uploadValue=0;
         this.imageUrl=null;
         this.imageData = event.target.files[0];
@@ -80,7 +97,7 @@ Vue.component('theme', {
           }, error=>{console.log(error.message)},
         ()=>{this.uploadValue=100;
             storageRef.snapshot.ref.getDownloadURL().then((url)=>{
-                this.imageUrl =url;
+                this.imageUrl = url;
               });
             }
           );
@@ -102,7 +119,7 @@ Vue.component('theme', {
             color="accent"
             outlined
             @click="dialog=true"
-          >Upload</v-btn>
+          >Upload Photo</v-btn>
       </v-row>
 
       <v-dialog
@@ -139,6 +156,7 @@ Vue.component('theme', {
                     append-icon
                     chips
                     deletable-chips
+                    :rules="[required]"
                     class="tag-input"
                     :search-input.sync="search"
                     >
@@ -147,7 +165,7 @@ Vue.component('theme', {
             </v-layout>
             <v-layout row>
               <v-flex class="text-center">
-                <v-btn color="pink" @click="addImageToDB">upload</v-btn>
+                <v-btn color="pink" :disabled="!okTag || !okImage" @click="addImageToDB">upload</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
